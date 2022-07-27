@@ -8,6 +8,7 @@ import { defaultProps } from './defaultProps'
 const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 export const CustomPincode = ({
+  initialPinValues,
   leftElement,
   leftElementCallback,
   rightElement,
@@ -41,7 +42,7 @@ export const CustomPincode = ({
   isPinError,
   errorPointStyles,
 }) => {
-  const [pinValues, setPinValues] = useState('');
+  const [pinValues, setPinValues] = useState(initialPinValues ? initialPinValues : '');
 
   const mergeStyles = useCallback((a, b) => ([a, b]), []);
 
@@ -152,10 +153,10 @@ export const CustomPincode = ({
             {isDeleteButton && buttonDeletePosition === 'left'
               ? renderDelete
               : isLeft && (
-                  <TouchableOpacity style={leftButtonStyle} onPress={leftElementCallback}>
-                    {leftElement}
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity style={leftButtonStyle} onPress={leftElementCallback}>
+                  {leftElement}
+                </TouchableOpacity>
+              )}
           </View>
           <TouchableOpacity style={pinStyles.zeroButton} onPress={() => handleOnPressNumber('0')}>
             <Text style={buttonTextStyle}>0</Text>
@@ -164,10 +165,10 @@ export const CustomPincode = ({
             {isDeleteButton && buttonDeletePosition === 'right'
               ? renderDelete
               : isRight && (
-                  <TouchableOpacity style={rightButtonStyle} onPress={rightElementCallback}>
-                    {rightElement}
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity style={rightButtonStyle} onPress={rightElementCallback}>
+                  {rightElement}
+                </TouchableOpacity>
+              )}
           </View>
         </View>
         {isBottom && (
