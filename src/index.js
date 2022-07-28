@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { View, TouchableOpacity, Text } from 'react-native'
+import { View, TouchableOpacity, Text, Animated } from 'react-native'
 
 import { styles } from './styles'
 import { types } from './types'
@@ -8,6 +8,8 @@ import { defaultProps } from './defaultProps'
 const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 export const CustomPincode = ({
+  pointRefs,
+  animationStopped,
   initialPinValues,
   leftElement,
   leftElementCallback,
@@ -42,6 +44,49 @@ export const CustomPincode = ({
   isPinError,
   errorPointStyles,
 }) => {
+  const DISPLACEMENT_HEIGHT = 10;
+  const DURATION = 50;
+
+  const DOT_WIDTH = 10;
+  const DOT_HEIGHT = 10;
+  const INITIAL_END_VALUE = 0;
+  const INITIAL_START_VALUE = 0 + DISPLACEMENT_HEIGHT;
+
+  const [endValue, setEndValue] = useState(INITIAL_END_VALUE);
+  const [animationFinished, setAnimationFinished] = useState(true);
+
+  const [startValue, setStartValue] = useState(INITIAL_START_VALUE);
+
+  // animation
+  const animation = Animated.stagger(
+    50,
+    pointRefs.map(pointRef => {
+      return Animated.timing(pointRef, {
+        toValue: endValue,
+        useNativeDriver: true,
+        duration: DURATION,
+      });
+    }),
+  );
+
+  useEffect(() => {
+    if (animationFinished) {
+      setAnimationFinished(false);
+      animation.start(({ finished }) => {
+        if (finished) {
+          setAnimationFinished(true);
+          if (!animationStopped) {
+            setStartValue(endValue);
+            setEndValue(startValue);
+          } else {
+            setStartValue(INITIAL_START_VALUE);
+            setEndValue(INITIAL_END_VALUE);
+          }
+        }
+      });
+    }
+  }, [animationFinished, animationStopped]);
+
   const [pinValues, setPinValues] = useState(initialPinValues ? initialPinValues : '');
 
   const mergeStyles = useCallback((a, b) => ([a, b]), []);
@@ -132,7 +177,7 @@ export const CustomPincode = ({
   return (
     <>
       <View style={pinStyles.points}>
-        {[...Array(pointsLength || pinLength).keys()].map(point => {
+        {[...Array(pointsLength || pinLength).keys()].map((point, index) => {
           let currentPointStyle = pointStyle;
 
           if (isPinError) {
@@ -143,7 +188,10 @@ export const CustomPincode = ({
 
           currentPointStyle = mergeStyles(styles.point, currentPointStyle);
 
-          return <View style={currentPointStyle} key={`${point}${keyPoints}`} />
+          // return <View style={currentPointStyle} key={`${point}${keyPoints}`} />
+          return <Animated.View
+            key={`${point}${keyPoints}`}
+            style={[currentPointStyle, { transform: [{ translateY: pointRefs[index] }] }]}></Animated.View>
         })}
       </View>
       <View style={pinStyles.viewContainer}>
