@@ -44,7 +44,7 @@ export const CustomPincode = ({
   isPinError,
   errorPointStyles,
 }) => {
-  const DISPLACEMENT_HEIGHT = 10;
+  const DISPLACEMENT_HEIGHT = -10;
   const DURATION = 50;
 
   const DOT_WIDTH = 10;
@@ -191,7 +191,7 @@ export const CustomPincode = ({
           // return <View style={currentPointStyle} key={`${point}${keyPoints}`} />
           return <Animated.View
             key={`${point}${keyPoints}`}
-            style={[currentPointStyle, { transform: [{ translateY: pointRefs[index] }] }]}></Animated.View>
+            style={[currentPointStyle, { transform: [{ translateY: pointRefs[index] }], marginBottom: 15 }]}></Animated.View>
         })}
       </View>
       <View style={pinStyles.viewContainer}>
